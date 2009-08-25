@@ -1,0 +1,36 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "axStream", "axStream\axStream.csproj", "{5EDEC966-B28D-4466-9152-308FCBB190C3}"
+EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "axStream Setup", "axStream Setup\axStream Setup.vdproj", "{97F84EEB-1735-4D9B-A6C2-00BEE8CE846B}"
+EndProject
+Global
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccNumberOfProjects = 3
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccTeamFoundationServer = https://tfs07.codeplex.com/
+		SccLocalPath0 = .
+		SccProjectUniqueName1 = axStream\\axStream.csproj
+		SccProjectName1 = axStream
+		SccLocalPath1 = axStream
+		SccProjectUniqueName2 = axStream\u0020Setup\\axStream\u0020Setup.vdproj
+		SccProjectName2 = axStream\u0020Setup
+		SccLocalPath2 = axStream\u0020Setup
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5EDEC966-B28D-4466-9152-308FCBB190C3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5EDEC966-B28D-4466-9152-308FCBB190C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5EDEC966-B28D-4466-9152-308FCBB190C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5EDEC966-B28D-4466-9152-308FCBB190C3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{97F84EEB-1735-4D9B-A6C2-00BEE8CE846B}.Debug|Any CPU.ActiveCfg = Debug
+		{97F84EEB-1735-4D9B-A6C2-00BEE8CE846B}.Release|Any CPU.ActiveCfg = Release
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
