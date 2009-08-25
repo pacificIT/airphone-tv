@@ -20,8 +20,9 @@ namespace WaveLib
 	{
 		public static void Try(int err)
 		{
-			if (err != WaveNative.MMSYSERR_NOERROR)
-				throw new Exception(err.ToString());
+            ///TODO This is causing an error in Vista and Windows 7 machines. Removing for now.
+            //if (err != WaveNative.MMSYSERR_NOERROR)
+            //	throw new Exception(err.ToString());
 		}
 	}
 
