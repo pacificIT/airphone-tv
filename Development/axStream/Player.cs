@@ -155,7 +155,7 @@ namespace axStream
                 NAudio.Wave.WaveFormat fmt = new NAudio.Wave.WaveFormat(44100, 16, 2);
                 //Player.BufferSize = fmt.AverageBytesPerSecond;
                 //m_Recorder = new WaveLib.WaveInRecorder(-1, fmt, BufferSize, 3, new WaveLib.BufferDoneEventHandler(DataArrived));
-                waveInStream = new WaveInStream(0, fmt, null, BufferSize, 10);
+                waveInStream = new WaveInStream(0, fmt, null, BufferSize, 3);
                 waveInStream.DataAvailable += new EventHandler<WaveInEventArgs>(DataArrived);
                 waveInStream.StartRecording();
 
