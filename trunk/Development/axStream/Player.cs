@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using NAudio.Wave;
 
 namespace axStream
 {
@@ -18,8 +19,8 @@ namespace axStream
             public Exception Exception;
         }
 
-        private WaveLib.WaveInRecorder m_Recorder;
-        private byte[] m_RecBuffer;
+        private WaveInStream waveInStream;
+        //private byte[] m_RecBuffer;
         private RAOPClient at;
         private string ip;
         private Double Volume = -144;
@@ -57,14 +58,14 @@ namespace axStream
                 OnError(this, e);
         }
 
-        private void DataArrived(IntPtr data, int size)
+        private void DataArrived(object sender, WaveInEventArgs e)
         {
 
-            if (m_RecBuffer == null || m_RecBuffer.Length < size)
-                m_RecBuffer = new byte[size];
-            System.Runtime.InteropServices.Marshal.Copy(data, m_RecBuffer, 0, size);
+            //if (m_RecBuffer == null || m_RecBuffer.Length < e.BytesRecorded)
+            //    m_RecBuffer = new byte[size];
+            //System.Runtime.InteropServices.Marshal.Copy(data, m_RecBuffer, 0, size);
 
-            byte[] alac = EncodeALAC(m_RecBuffer);
+            byte[] alac = EncodeALAC(e.Buffer);
 
             try
             {
@@ -72,10 +73,10 @@ namespace axStream
             }
             catch (Exception ex)
             {
-                ErrorEventArgs e = new ErrorEventArgs();
-                e.Error = ErrorEventArgs.ERRORNUMBER.ERRORSENDING;
-                e.Exception = ex;
-                ErrorEvent(e);
+                ErrorEventArgs err = new ErrorEventArgs();
+                err.Error = ErrorEventArgs.ERRORNUMBER.ERRORSENDING;
+                err.Exception = ex;
+                ErrorEvent(err);
 
                 Stop();
             }
@@ -89,14 +90,16 @@ namespace axStream
 
         public void Stop()
         {
-            if (m_Recorder != null)
+            if (waveInStream != null)
                 try
                 {
-                    m_Recorder.Dispose();
+                    waveInStream.StopRecording();
+                    waveInStream.Dispose();
+                    
                 }
                 finally
                 {
-                    m_Recorder = null;
+                    waveInStream = null;
                 }
             if (at != null)
             {
@@ -149,8 +152,12 @@ namespace axStream
 
 
                 // Start recorder
-                WaveLib.WaveFormat fmt = new WaveLib.WaveFormat(44100, 16, 2);
-                m_Recorder = new WaveLib.WaveInRecorder(-1, fmt, BufferSize, 3, new WaveLib.BufferDoneEventHandler(DataArrived));
+                NAudio.Wave.WaveFormat fmt = new NAudio.Wave.WaveFormat(44100, 16, 2);
+                //Player.BufferSize = fmt.AverageBytesPerSecond;
+                //m_Recorder = new WaveLib.WaveInRecorder(-1, fmt, BufferSize, 3, new WaveLib.BufferDoneEventHandler(DataArrived));
+                waveInStream = new WaveInStream(0, fmt, null, BufferSize, 10);
+                waveInStream.DataAvailable += new EventHandler<WaveInEventArgs>(DataArrived);
+                waveInStream.StartRecording();
 
                 ConnectedEvent(EventArgs.Empty);
             }
@@ -180,7 +187,7 @@ namespace axStream
         {
             // Frame size is set as 4096 samples, stereo
             //BitBuffer bitbuf = new BitBuffer((4096 * 2 * 2) + 3);
-            BitBuffer bitbuf = new BitBuffer((BufferSize) + 3);
+            BitBuffer bitbuf = new BitBuffer(Player.BufferSize + 3);
 
             bitbuf.WriteBits(1, 3);  // channels -- 0 mono, 1 stereo
             bitbuf.WriteBits(0, 4);  // unknown
