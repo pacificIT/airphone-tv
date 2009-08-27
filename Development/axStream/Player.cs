@@ -19,7 +19,7 @@ namespace axStream
             public Exception Exception;
         }
 
-        private WaveInStream waveInStream;
+        private WaveIn waveInStream;
         //private byte[] m_RecBuffer;
         private RAOPClient at;
         private string ip;
@@ -152,10 +152,14 @@ namespace axStream
 
 
                 // Start recorder
-                NAudio.Wave.WaveFormat fmt = new NAudio.Wave.WaveFormat(44100, 16, 2);
+                //NAudio.Wave.WaveFormat fmt = new NAudio.Wave.WaveFormat(44100, 16, 2);
                 //Player.BufferSize = fmt.AverageBytesPerSecond;
                 //m_Recorder = new WaveLib.WaveInRecorder(-1, fmt, BufferSize, 3, new WaveLib.BufferDoneEventHandler(DataArrived));
-                waveInStream = new WaveInStream(0, fmt, null, BufferSize, 3);
+                waveInStream = new WaveIn();
+                waveInStream.NumberOfBuffers = 3;
+                waveInStream.BufferSize = Player.BufferSize;
+                waveInStream.PreferredBufferType = WaveIn.BufferType.Size;
+                waveInStream.WaveFormat = new NAudio.Wave.WaveFormat(44100, 16, 2);
                 waveInStream.DataAvailable += new EventHandler<WaveInEventArgs>(DataArrived);
                 waveInStream.StartRecording();
 
