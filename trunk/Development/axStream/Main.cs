@@ -9,14 +9,21 @@ using System.Resources;
 using System.Threading;
 using System.IO;
 using axStream.Properties;
+using ZeroconfService;
+using System.Collections;
+using System.Net;
 
 namespace axStream
 {
     public partial class Main : Form
     {
+        private NetService selectedService = null;
+
         public Main()
         {
             InitializeComponent();
+
+            
         }
 
         private Player pl;
@@ -24,26 +31,34 @@ namespace axStream
         private void Main_Load(object sender, EventArgs e)
         {
             //this.Hide();
+            nsBrowser.InvokeableObject = this;
+            nsBrowser.DidFindService += new NetServiceBrowser.ServiceFound(nsBrowser_DidFindService);
+            nsBrowser.DidRemoveService += new NetServiceBrowser.ServiceRemoved(nsBrowser_DidRemoveService);
 
-            try
+            if (!mBrowsing)
             {
-                DSInfo.ReadXml("info.xml");
-            }
-            catch (FileNotFoundException)
-            {
-                StreamWriter sw = File.CreateText("info.xml");
-                sw.WriteLine("<?xml version=\"1.0\" standalone=\"yes\"?>");
-                sw.WriteLine("<info>");
-                sw.WriteLine("  <ae>");
-                sw.WriteLine("      <ip>10.0.1.1</ip>");
-                sw.WriteLine("      <volume>-30</volume>");
-                sw.WriteLine("  </ae>");
-                sw.WriteLine("</info>\n");
-                sw.Close();
 
-                DSInfo.ReadXml("info.xml");
+                nsBrowser.SearchForService("_raop._tcp", "");
+
+                mBrowsing = true;
             }
-            IPTextBox.Text = DSInfo.Tables[0].Rows[0].ItemArray[0].ToString();
+            else
+            {
+                nsBrowser.Stop();
+
+                if (resolving != null)
+                {
+                    resolving.Stop();
+                    resolving = null;
+                }
+                ClearResolveInfo();
+                servicesList.BeginUpdate();
+                servicesList.Items.Clear();
+                servicesList.EndUpdate();
+
+                mBrowsing = false;
+            }
+
             VolumeBar.Value = int.Parse(DSInfo.Tables[0].Rows[0].ItemArray[1].ToString());
 
             notifyIcon.Text = "";
@@ -55,16 +70,18 @@ namespace axStream
             ConnectionGB.Enabled = true;
             StartButton.Enabled = true;
             StopButton.Enabled = false;
+
+          
         }
 
         private void OnConnect(object sender, EventArgs e)
         {
             StatusLabel.Text = "Connected";
             notifyIcon.Icon = Resources.streaming;
-            notifyIcon.Text = "Streaming to: " + IPTextBox.Text;
+            notifyIcon.Text = "Streaming to: " + selectedService.HostName;
             notifyIcon.ShowBalloonTip(2000,
                                       "Connected",
-                                      "Connected successfully to: " + IPTextBox.Text, 
+                                      "Connected successfully to: " + selectedService.HostName, 
                                       ToolTipIcon.Info);
 
             DoConnectControls();
@@ -87,7 +104,7 @@ namespace axStream
             notifyIcon.Text = "";
             notifyIcon.ShowBalloonTip(2000,
                           "Disconnected",
-                          "Disconnected from: " + IPTextBox.Text,
+                          "Disconnected from: " + selectedService.HostName,
                           ToolTipIcon.Info);
 
             DoDisconnectControl();
@@ -103,7 +120,7 @@ namespace axStream
                 notifyIcon.Text = "Error connecting to: ";// +IPTextBox.Text + "\n" + e.Exception.ToString();
                 notifyIcon.ShowBalloonTip(2000,
                           "Error",
-                          "Could not connect to: " + IPTextBox.Text,
+                          "Could not connect to: " + selectedService.HostName,
                           ToolTipIcon.Error);
             }
             else if (e.Error == Player.ErrorEventArgs.ERRORNUMBER.ERRORSENDING)
@@ -111,7 +128,7 @@ namespace axStream
                 notifyIcon.Text = "Error sending to: ";// +IPTextBox.Text + "\n" + e.Exception.ToString();
                 notifyIcon.ShowBalloonTip(2000,
                           "Error",
-                          "Transmission was interrupted when sending to: " + IPTextBox.Text,
+                          "Transmission was interrupted when sending to: " + selectedService.HostName,
                           ToolTipIcon.Error);
             }
             else if (e.Error == Player.ErrorEventArgs.ERRORNUMBER.ERRORRECORDING)
@@ -156,7 +173,7 @@ namespace axStream
             StatusLabel.Text = "Connecting...";
             notifyIcon.Icon = Resources.active;
 
-            pl = new Player(IPTextBox.Text, Convert.ToDouble(VolumeBar.Value));
+            pl = new Player(selectedService.HostName, Convert.ToDouble(VolumeBar.Value));
 
             pl.OnConnect += new Player.OnConnectEventHandler(this.OnConnect);
             pl.OnDisconnect += new Player.OnDisconnectEventHandler(this.OnDisconnect);
@@ -237,12 +254,6 @@ namespace axStream
 
         private void ExitApplication()
         {
-            object[] data = DSInfo.Tables[0].Rows[0].ItemArray;
-            data[0] = IPTextBox.Text;
-            data[1] = VolumeBar.Value.ToString();
-            DSInfo.Tables[0].Rows[0].ItemArray = data;
-            DSInfo.WriteXml("info.xml");
-
             StopPlaying();
             notifyIcon.Visible = false;
             Application.Exit();
@@ -277,6 +288,95 @@ namespace axStream
         private void aboutOAEPToolStripMenuItem_Click(object sender, EventArgs e)
         {
             new AboutBox().ShowDialog(this);
+        }
+
+
+         NetServiceBrowser nsBrowser = new NetServiceBrowser();
+        bool mBrowsing = false;
+
+        void nsBrowser_DidRemoveService(NetServiceBrowser browser, NetService service, bool moreComing)
+        {
+            servicesList.BeginUpdate();
+
+            foreach (ListViewItem item in servicesList.Items)
+            {
+                if (item.Tag == service)
+                    servicesList.Items.Remove(item);
+            }
+
+            servicesList.EndUpdate();
+        }
+
+        ArrayList waitingAdd = new ArrayList();
+        void nsBrowser_DidFindService(NetServiceBrowser browser, NetService service, bool moreComing)
+        {
+            ListViewItem item = new ListViewItem(service.Name);
+            item.Tag = service;
+
+            if (moreComing)
+            {
+                waitingAdd.Add(item);
+            }
+            else
+            {
+                servicesList.BeginUpdate();
+                while (waitingAdd.Count > 0)
+                {
+                    servicesList.Items.Add((ListViewItem)waitingAdd[0]);
+                    waitingAdd.RemoveAt(0);
+                }
+                servicesList.Items.Add(item);
+                servicesList.EndUpdate();
+            }
+        }
+
+        private void startStopButton_Click(object sender, EventArgs e)
+        {
+           
+        }
+
+        private void ClearResolveInfo()
+        {
+            servicesList.Visible = false;
+
+            servicesList.BeginUpdate();
+            servicesList.Items.Clear();
+            servicesList.EndUpdate();
+        }
+
+        NetService resolving = null;
+        private void Resolve(NetService resolve)
+        {
+            if (resolving != null)
+            {
+                resolving.Stop();
+            }
+
+            resolve.DidResolveService += new NetService.ServiceResolved(resolve_DidResolveService);
+            resolve.ResolveWithTimeout(10); /* FIXME timeout doesn't work */
+        }
+
+        void resolve_DidResolveService(NetService service)
+        {
+            selectedService = service;
+        }
+
+        private void servicesList_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            NetService selected = null;
+            try
+            {
+                selected = (NetService)servicesList.SelectedItems[0].Tag;
+            }
+            catch (Exception)
+            {
+                selected = null;
+            }
+
+            if (selected != null)
+            {
+                Resolve(selected);
+            }
         }
     }
 }

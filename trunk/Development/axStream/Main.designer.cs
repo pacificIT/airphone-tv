@@ -33,8 +33,7 @@ namespace axStream
             this.StartButton = new System.Windows.Forms.Button();
             this.StopButton = new System.Windows.Forms.Button();
             this.ConnectionGB = new System.Windows.Forms.GroupBox();
-            this.IPTextBox = new System.Windows.Forms.TextBox();
-            this.label1 = new System.Windows.Forms.Label();
+            this.servicesList = new System.Windows.Forms.ListView();
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.ConnectionStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.StatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
@@ -61,7 +60,7 @@ namespace axStream
             // 
             // StartButton
             // 
-            this.StartButton.Location = new System.Drawing.Point(13, 153);
+            this.StartButton.Location = new System.Drawing.Point(13, 245);
             this.StartButton.Name = "StartButton";
             this.StartButton.Size = new System.Drawing.Size(75, 23);
             this.StartButton.TabIndex = 0;
@@ -71,7 +70,7 @@ namespace axStream
             // 
             // StopButton
             // 
-            this.StopButton.Location = new System.Drawing.Point(94, 153);
+            this.StopButton.Location = new System.Drawing.Point(94, 245);
             this.StopButton.Name = "StopButton";
             this.StopButton.Size = new System.Drawing.Size(75, 23);
             this.StopButton.TabIndex = 1;
@@ -81,39 +80,30 @@ namespace axStream
             // 
             // ConnectionGB
             // 
-            this.ConnectionGB.Controls.Add(this.IPTextBox);
-            this.ConnectionGB.Controls.Add(this.label1);
+            this.ConnectionGB.Controls.Add(this.servicesList);
             this.ConnectionGB.Location = new System.Drawing.Point(13, 13);
             this.ConnectionGB.Name = "ConnectionGB";
-            this.ConnectionGB.Size = new System.Drawing.Size(240, 57);
+            this.ConnectionGB.Size = new System.Drawing.Size(240, 149);
             this.ConnectionGB.TabIndex = 2;
             this.ConnectionGB.TabStop = false;
             this.ConnectionGB.Text = "Connection";
             // 
-            // IPTextBox
+            // servicesList
             // 
-            this.IPTextBox.Location = new System.Drawing.Point(146, 21);
-            this.IPTextBox.MaxLength = 15;
-            this.IPTextBox.Name = "IPTextBox";
-            this.IPTextBox.Size = new System.Drawing.Size(79, 20);
-            this.IPTextBox.TabIndex = 1;
-            this.IPTextBox.Text = "10.0.1.1";
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(6, 24);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(99, 13);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "IP (Airport Express):";
+            this.servicesList.Location = new System.Drawing.Point(9, 20);
+            this.servicesList.Name = "servicesList";
+            this.servicesList.Size = new System.Drawing.Size(225, 117);
+            this.servicesList.TabIndex = 2;
+            this.servicesList.UseCompatibleStateImageBehavior = false;
+            this.servicesList.View = System.Windows.Forms.View.List;
+            this.servicesList.SelectedIndexChanged += new System.EventHandler(this.servicesList_SelectedIndexChanged);
             // 
             // statusStrip
             // 
             this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.ConnectionStatus,
             this.StatusLabel});
-            this.statusStrip.Location = new System.Drawing.Point(0, 190);
+            this.statusStrip.Location = new System.Drawing.Point(0, 308);
             this.statusStrip.Name = "statusStrip";
             this.statusStrip.Size = new System.Drawing.Size(267, 22);
             this.statusStrip.TabIndex = 3;
@@ -133,7 +123,7 @@ namespace axStream
             // VolumeGB
             // 
             this.VolumeGB.Controls.Add(this.VolumeBar);
-            this.VolumeGB.Location = new System.Drawing.Point(13, 77);
+            this.VolumeGB.Location = new System.Drawing.Point(13, 169);
             this.VolumeGB.Name = "VolumeGB";
             this.VolumeGB.Size = new System.Drawing.Size(240, 70);
             this.VolumeGB.TabIndex = 4;
@@ -171,50 +161,50 @@ namespace axStream
             this.toolStripMenuItem5,
             this.toolStripMenuItem4});
             this.contextMenu.Name = "contextMenu";
-            this.contextMenu.Size = new System.Drawing.Size(139, 126);
+            this.contextMenu.Size = new System.Drawing.Size(159, 126);
             // 
             // toolStripMenuItem2
             // 
             this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-            this.toolStripMenuItem2.Size = new System.Drawing.Size(138, 22);
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(158, 22);
             this.toolStripMenuItem2.Text = "Start";
             this.toolStripMenuItem2.Click += new System.EventHandler(this.toolStripMenuItem2_Click);
             // 
             // toolStripMenuItem3
             // 
             this.toolStripMenuItem3.Name = "toolStripMenuItem3";
-            this.toolStripMenuItem3.Size = new System.Drawing.Size(138, 22);
+            this.toolStripMenuItem3.Size = new System.Drawing.Size(158, 22);
             this.toolStripMenuItem3.Text = "Stop";
             this.toolStripMenuItem3.Click += new System.EventHandler(this.toolStripMenuItem3_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(135, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(155, 6);
             // 
             // toolStripMenuItem1
             // 
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(138, 22);
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(158, 22);
             this.toolStripMenuItem1.Text = "Show";
             this.toolStripMenuItem1.Click += new System.EventHandler(this.toolStripMenuItem1_Click);
             // 
             // aboutOAEPToolStripMenuItem
             // 
             this.aboutOAEPToolStripMenuItem.Name = "aboutOAEPToolStripMenuItem";
-            this.aboutOAEPToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
+            this.aboutOAEPToolStripMenuItem.Size = new System.Drawing.Size(158, 22);
             this.aboutOAEPToolStripMenuItem.Text = "About axStream";
             this.aboutOAEPToolStripMenuItem.Click += new System.EventHandler(this.aboutOAEPToolStripMenuItem_Click);
             // 
             // toolStripMenuItem5
             // 
             this.toolStripMenuItem5.Name = "toolStripMenuItem5";
-            this.toolStripMenuItem5.Size = new System.Drawing.Size(135, 6);
+            this.toolStripMenuItem5.Size = new System.Drawing.Size(155, 6);
             // 
             // toolStripMenuItem4
             // 
             this.toolStripMenuItem4.Name = "toolStripMenuItem4";
-            this.toolStripMenuItem4.Size = new System.Drawing.Size(138, 22);
+            this.toolStripMenuItem4.Size = new System.Drawing.Size(158, 22);
             this.toolStripMenuItem4.Text = "Exit";
             this.toolStripMenuItem4.Click += new System.EventHandler(this.toolStripMenuItem4_Click);
             // 
@@ -224,7 +214,7 @@ namespace axStream
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(178, 153);
+            this.button1.Location = new System.Drawing.Point(178, 245);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(75, 23);
             this.button1.TabIndex = 5;
@@ -236,7 +226,7 @@ namespace axStream
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(267, 212);
+            this.ClientSize = new System.Drawing.Size(267, 330);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.VolumeGB);
             this.Controls.Add(this.statusStrip);
@@ -253,7 +243,6 @@ namespace axStream
             this.TopMost = true;
             this.Load += new System.EventHandler(this.Main_Load);
             this.ConnectionGB.ResumeLayout(false);
-            this.ConnectionGB.PerformLayout();
             this.statusStrip.ResumeLayout(false);
             this.statusStrip.PerformLayout();
             this.VolumeGB.ResumeLayout(false);
@@ -271,8 +260,6 @@ namespace axStream
         private System.Windows.Forms.Button StartButton;
         private System.Windows.Forms.Button StopButton;
         private System.Windows.Forms.GroupBox ConnectionGB;
-        private System.Windows.Forms.TextBox IPTextBox;
-        private System.Windows.Forms.Label label1;
         private System.Windows.Forms.StatusStrip statusStrip;
         private System.Windows.Forms.GroupBox VolumeGB;
         private System.Windows.Forms.TrackBar VolumeBar;
@@ -289,6 +276,7 @@ namespace axStream
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.ToolStripMenuItem aboutOAEPToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem5;
+        private System.Windows.Forms.ListView servicesList;
     }
 }
 
