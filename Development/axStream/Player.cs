@@ -25,6 +25,8 @@ namespace axStream
         private string ip;
         private Double Volume = -144;
 
+        //This appears to be an AirTunes magic number... Although maybe it is more that it needs to be a power of 2?
+        //Anyway this works.
         private const int BufferSize = 16384; // Default 16384
 
         public delegate void OnConnectEventHandler(object sender, EventArgs e);
